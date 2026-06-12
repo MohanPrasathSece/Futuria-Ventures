@@ -52,7 +52,7 @@ export function Footer() {
   ];
 
   return (
-    <footer className="relative overflow-hidden bg-background border-t border-white/[0.05] px-6 pb-10 pt-16">
+    <footer className="relative overflow-hidden bg-background border-t border-white/[0.05] px-6 pb-8 pt-12 md:pb-10 md:pt-16">
       {/* Subtle glow */}
       <div className="pointer-events-none absolute left-1/2 top-0 h-[300px] w-[600px] -translate-x-1/2 rounded-full bg-[oklch(0.55_0.13_165)] opacity-[0.04] blur-[80px]" />
 
@@ -131,13 +131,13 @@ export function Contact() {
   };
 
   return (
-    <section id="contact" className="relative overflow-hidden bg-white px-6 py-32 text-black rounded-t-[40px] md:rounded-t-[80px]">
+    <section id="contact" className="relative overflow-hidden bg-white px-6 py-20 md:py-32 text-black rounded-t-[40px] md:rounded-t-[80px]">
       <div className="relative mx-auto grid max-w-6xl gap-16 md:grid-cols-2">
         <Reveal>
           <span className="inline-flex items-center rounded-full border border-black/10 bg-black/5 px-4 py-1.5 text-[12px] font-medium uppercase tracking-wider text-black/60">
             Contactez-nous
           </span>
-          <h2 className="mt-6 text-[44px] font-normal leading-[1.05] tracking-tight md:text-[56px]">
+          <h2 className="mt-6 text-[36px] md:text-[44px] lg:text-[56px] font-normal leading-[1.05] tracking-tight">
             Prêt à commencer votre <span className="text-emerald">parcours ?</span>
           </h2>
           <p className="mt-6 max-w-md text-[16px] font-normal text-black/60">
@@ -148,7 +148,7 @@ export function Contact() {
         </Reveal>
 
         <Reveal delay={120}>
-          <form onSubmit={submit} className="relative rounded-[32px] border border-black/5 bg-white p-8 shadow-[0_20px_50px_rgba(0,0,0,0.05)] md:p-10">
+          <form onSubmit={submit} className="relative rounded-[32px] border border-black/5 bg-white p-6 sm:p-8 md:p-10 shadow-[0_20px_50px_rgba(0,0,0,0.05)]">
             {submitted ? (
               <div className="flex flex-col items-center justify-center py-16 text-center">
                 <div className="flex h-16 w-16 items-center justify-center rounded-full bg-emerald/10">

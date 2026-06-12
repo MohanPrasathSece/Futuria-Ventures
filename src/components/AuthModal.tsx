@@ -110,13 +110,13 @@ export function AuthModal({
     <Dialog.Root open={open} onOpenChange={onOpenChange}>
       <Dialog.Portal>
         <Dialog.Overlay className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm transition-opacity duration-300" />
-        <Dialog.Content className="fixed left-1/2 top-1/2 z-[110] flex w-full max-w-[420px] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-[24px] border border-white/10 bg-black/95 shadow-2xl backdrop-blur-2xl">
+        <Dialog.Content className="fixed left-1/2 top-1/2 z-[110] flex w-[calc(100vw-2rem)] sm:w-full max-w-[420px] -translate-x-1/2 -translate-y-1/2 flex-col overflow-hidden rounded-[24px] border border-white/10 bg-black/95 shadow-2xl backdrop-blur-2xl">
           
           <Dialog.Close className="absolute right-5 top-5 z-20 rounded-full bg-white/5 p-2 text-white/50 transition hover:bg-white/10 hover:text-white">
             <X className="h-4 w-4" />
           </Dialog.Close>
 
-          <div className="flex flex-col p-8 sm:p-10">
+          <div className="flex flex-col p-6 sm:p-10">
             {mode === "login" ? (
               // LOGIN MODE
               <div className="animate-in fade-in zoom-in-95 duration-300">

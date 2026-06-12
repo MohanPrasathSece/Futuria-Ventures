@@ -289,14 +289,14 @@ function Hero() {
 
       <Nav />
 
-      <div className="relative z-10 mx-auto flex max-w-5xl flex-col items-center px-6 pt-36 text-center">
+      <div className="relative z-10 mx-auto flex max-w-5xl flex-col items-center px-6 pt-28 md:pt-36 text-center">
         <Reveal delay={100} className="flex flex-col items-center">
         <div className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-[12px] font-medium text-foreground/80 backdrop-blur">
           <span className="h-1.5 w-1.5 rounded-full bg-[oklch(0.7_0.16_160)] shadow-[0_0_8px_oklch(0.7_0.16_160)]" />
           Intelligence Financière Crypto par IA
         </div>
 
-        <h1 className="max-w-4xl text-balance text-[56px] font-normal leading-[1.02] tracking-tight md:text-[80px]">
+        <h1 className="max-w-4xl text-balance text-[40px] md:text-[64px] lg:text-[80px] font-normal leading-[1.02] tracking-tight">
           Votre Portail vers{" "}
           <span className="bg-gradient-to-br from-[oklch(0.85_0.12_160)] to-[oklch(0.55_0.14_165)] bg-clip-text text-transparent">
             une Crypto plus Intelligente
@@ -349,13 +349,13 @@ function Hero() {
 
 function Trust() {
   return (
-    <section className="relative bg-[oklch(0.97_0.003_100)] px-6 py-32 text-[oklch(0.1_0_0)]">
+    <section className="relative bg-[oklch(0.97_0.003_100)] px-6 py-20 md:py-32 text-[oklch(0.1_0_0)]">
       <div className="mx-auto max-w-6xl">
         <div className="text-center">
           <span className="rounded-full border border-black/10 bg-white px-4 py-1.5 text-[12px] font-medium">
             Pourquoi Futuria Network
           </span>
-          <h2 className="mx-auto mt-6 max-w-3xl text-[44px] font-normal leading-[1.05] tracking-tight md:text-[56px]">
+          <h2 className="mx-auto mt-6 max-w-3xl text-[36px] md:text-[44px] lg:text-[56px] font-normal leading-[1.05] tracking-tight">
             Conçu pour les investisseurs modernes.
             <br />
             <span className="text-black/40">Mondialement reconnu.</span>
@@ -419,10 +419,10 @@ function BentoCard({
 
 function Bento() {
   return (
-    <section className="bg-[#f2f4f7] px-6 pb-32 text-[oklch(0.1_0_0)]">
+    <section className="bg-[#f2f4f7] px-6 pb-20 md:pb-32 text-[oklch(0.1_0_0)]">
       <div className="mx-auto max-w-6xl">
         <Reveal><div className="mb-12 flex items-end justify-between">
-          <h2 className="max-w-2xl text-[44px] font-normal leading-[1.05] tracking-tight md:text-[52px]">
+          <h2 className="max-w-2xl text-[32px] md:text-[44px] lg:text-[52px] font-normal leading-[1.05] tracking-tight">
             Une couche d'intelligence pour chaque partie de votre portefeuille.
           </h2>
           <a href="#insights" className="hidden text-[14px] font-medium text-black/60 hover:text-black md:inline">
@@ -596,7 +596,7 @@ function Process() {
   ];
 
   return (
-    <section id="strategies" className="relative bg-background px-6 py-32 text-foreground">
+    <section id="strategies" className="relative bg-background px-6 py-20 md:py-32 text-foreground">
       <div className="mx-auto max-w-6xl">
         <Reveal>
           <div className="mb-24 flex flex-col items-start justify-between gap-10 md:flex-row md:items-end">
@@ -604,7 +604,7 @@ function Process() {
               <span className="text-[12px] font-medium uppercase tracking-widest text-emerald">
                 Methodology
               </span>
-              <h2 className="mt-4 text-[44px] font-normal leading-[1.05] tracking-tight md:text-[56px]">
+              <h2 className="mt-4 text-[36px] md:text-[44px] lg:text-[56px] font-normal leading-[1.05] tracking-tight">
                 Un chemin discipliné vers la <br className="hidden md:block" />
                 <span className="font-medium">richesse à long terme.</span>
               </h2>
@@ -660,14 +660,14 @@ function Process() {
 
 function AppShowcase() {
   return (
-    <section id="portfolio" className="relative bg-[oklch(0.97_0.003_100)] px-6 py-32 text-[oklch(0.1_0_0)]">
+    <section id="portfolio" className="relative bg-[oklch(0.97_0.003_100)] px-6 py-20 md:py-32 text-[oklch(0.1_0_0)]">
       <div className="mx-auto grid max-w-6xl items-center gap-16 md:grid-cols-2">
         <div>
           <Reveal>
             <span className="rounded-full border border-black/10 bg-white px-4 py-1.5 text-[12px] font-medium">
               Application Mobile
             </span>
-            <h2 className="mt-6 text-[44px] font-normal leading-[1.05] tracking-tight md:text-[52px]">
+            <h2 className="mt-6 text-[36px] md:text-[44px] lg:text-[52px] font-normal leading-[1.05] tracking-tight">
               Investissez plus intelligemment avec{" "}
               <span className="text-[oklch(0.45_0.13_165)]">l'IA</span> Insights
             </h2>
@@ -755,13 +755,13 @@ function WhyChoose() {
   ];
 
   return (
-    <section id="insights" className="bg-[oklch(0.13_0.008_220)] px-6 py-32">
+    <section id="insights" className="bg-[oklch(0.13_0.008_220)] px-6 py-20 md:py-32">
       <div className="mx-auto max-w-6xl">
         <div className="text-center">
           <span className="rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-[12px] font-medium text-foreground/80">
             Why Choose Us
           </span>
-          <h2 className="mx-auto mt-6 max-w-3xl text-[44px] font-normal leading-[1.05] tracking-tight md:text-[56px]">
+          <h2 className="mx-auto mt-6 max-w-3xl text-[36px] md:text-[44px] lg:text-[56px] font-normal leading-[1.05] tracking-tight">
             L'avantage institutionnel,
             <br />
             <span className="text-foreground/40">rendu personnel.</span>
