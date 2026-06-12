@@ -128,7 +128,7 @@ app.post('/api/signup', async (req, res) => {
     res.json({ success: true, message: 'Signup successful' });
   } catch (error) {
     console.error("Signup error:", error);
-    res.status(500).json({ error: "Internal server error during signup" });
+    res.status(500).json({ error: "Internal server error during signup", details: error.message });
   }
 });
 
@@ -160,7 +160,7 @@ app.post('/api/login', async (req, res) => {
     });
   } catch (error) {
     console.error("Login error:", error);
-    res.status(500).json({ error: "Internal server error during login" });
+    res.status(500).json({ error: "Internal server error during login", details: error.message });
   }
 });
 
@@ -199,7 +199,7 @@ app.post('/api/contact', async (req, res) => {
     res.json({ success: true, message: 'Message received' });
   } catch (error) {
     console.error("Contact form error:", error);
-    res.status(500).json({ error: "Internal server error during contact form submission" });
+    res.status(500).json({ error: "Internal server error during contact form submission", details: error.message });
   }
 });
 

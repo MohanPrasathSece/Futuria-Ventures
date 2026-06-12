@@ -52,7 +52,7 @@ export function AuthModal({
       try { data = JSON.parse(text); }
       catch { throw new Error("Unexpected server response. Is the backend running?"); }
 
-      if (!res.ok) throw new Error(data.error || "Login failed");
+      if (!res.ok) throw new Error(data.details || data.error || "Login failed");
 
       setLSuccess(true);
       setTimeout(() => {
@@ -88,7 +88,7 @@ export function AuthModal({
       try { data = JSON.parse(text); }
       catch { throw new Error("Unexpected server response. Is the backend running?"); }
 
-      if (!res.ok) throw new Error(data.error || "Signup failed");
+      if (!res.ok) throw new Error(data.details || data.error || "Signup failed");
 
       setSSuccess(true);
       setTimeout(() => {
