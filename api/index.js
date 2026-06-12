@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import xlsx from 'xlsx';
 import dotenv from 'dotenv';
+import fs from 'fs';
 import { put, list } from '@vercel/blob';
 
 dotenv.config();
@@ -18,6 +19,17 @@ const BLOB_FILE_NAME = 'users.xlsx';
 
 // Helper to get or create workbook from Vercel Blob
 const getWorkbookFromBlob = async () => {
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    console.warn("No BLOB_READ_WRITE_TOKEN found, using local users.xlsx");
+    if (fs.existsSync(BLOB_FILE_NAME)) {
+      return xlsx.readFile(BLOB_FILE_NAME);
+    }
+    const wb = xlsx.utils.book_new();
+    xlsx.utils.book_append_sheet(wb, xlsx.utils.json_to_sheet([]), 'Users');
+    xlsx.utils.book_append_sheet(wb, xlsx.utils.json_to_sheet([]), 'Contacts');
+    return wb;
+  }
+
   try {
     const { blobs } = await list({ prefix: BLOB_FILE_NAME });
     const blob = blobs.find(b => b.pathname === BLOB_FILE_NAME);
@@ -41,6 +53,10 @@ const getWorkbookFromBlob = async () => {
 
 // Helper to save workbook to Vercel Blob
 const saveWorkbookToBlob = async (wb) => {
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    xlsx.writeFile(wb, BLOB_FILE_NAME);
+    return;
+  }
   const buffer = xlsx.write(wb, { type: 'buffer', bookType: 'xlsx' });
   await put(BLOB_FILE_NAME, buffer, {
     access: 'public',
