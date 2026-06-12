@@ -27,7 +27,11 @@ const getWorkbookFromBlob = async () => {
     const blob = blobs.find(b => b.pathname === BLOB_FILE_NAME);
     
     if (blob) {
-      const res = await fetch(blob.url);
+      const res = await fetch(blob.url, {
+        headers: {
+          Authorization: `Bearer ${process.env.BLOB_READ_WRITE_TOKEN}`
+        }
+      });
       const arrayBuffer = await res.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
       return xlsx.read(buffer, { type: 'buffer' });
@@ -50,7 +54,7 @@ const saveWorkbookToBlob = async (wb) => {
   }
   const buffer = xlsx.write(wb, { type: 'buffer', bookType: 'xlsx' });
   await put(BLOB_FILE_NAME, buffer, {
-    access: 'public',
+    access: 'private',
     addRandomSuffix: false, // ensures we overwrite the same file
   });
 };
