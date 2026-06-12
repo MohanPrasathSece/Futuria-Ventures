@@ -2,7 +2,6 @@ import express from 'express';
 import cors from 'cors';
 import xlsx from 'xlsx';
 import dotenv from 'dotenv';
-import fs from 'fs';
 import { put, list } from '@vercel/blob';
 
 dotenv.config();
@@ -20,15 +19,7 @@ const BLOB_FILE_NAME = 'users.xlsx';
 // Helper to get or create workbook from Vercel Blob
 const getWorkbookFromBlob = async () => {
   if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    const localFile = process.env.VERCEL ? '/tmp/users.xlsx' : BLOB_FILE_NAME;
-    console.warn("No BLOB_READ_WRITE_TOKEN found, using local fallback: " + localFile);
-    if (fs.existsSync(localFile)) {
-      return xlsx.readFile(localFile);
-    }
-    const wb = xlsx.utils.book_new();
-    xlsx.utils.book_append_sheet(wb, xlsx.utils.json_to_sheet([]), 'Users');
-    xlsx.utils.book_append_sheet(wb, xlsx.utils.json_to_sheet([]), 'Contacts');
-    return wb;
+    throw new Error("BLOB_READ_WRITE_TOKEN is missing. Please add it to your environment variables.");
   }
 
   try {
@@ -55,9 +46,7 @@ const getWorkbookFromBlob = async () => {
 // Helper to save workbook to Vercel Blob
 const saveWorkbookToBlob = async (wb) => {
   if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    const localFile = process.env.VERCEL ? '/tmp/users.xlsx' : BLOB_FILE_NAME;
-    xlsx.writeFile(wb, localFile);
-    return;
+    throw new Error("BLOB_READ_WRITE_TOKEN is missing. Cannot save to Blob.");
   }
   const buffer = xlsx.write(wb, { type: 'buffer', bookType: 'xlsx' });
   await put(BLOB_FILE_NAME, buffer, {
