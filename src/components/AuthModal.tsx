@@ -129,8 +129,8 @@ export function AuthModal({
                 </div>
 
                 <div className="text-center">
-                  <h2 className="text-2xl font-medium tracking-tight text-white">Bon retour</h2>
-                  <p className="mt-1.5 text-[15px] text-white/50">Entrez votre e-mail pour vous connecter.</p>
+                  <Dialog.Title className="text-2xl font-medium tracking-tight text-white">Bon retour</Dialog.Title>
+                  <Dialog.Description className="mt-1.5 text-[15px] text-white/50">Entrez votre e-mail pour vous connecter.</Dialog.Description>
                 </div>
 
                 {lSuccess ? (
@@ -172,8 +172,8 @@ export function AuthModal({
                 </div>
 
                 <div className="text-center">
-                  <h2 className="text-2xl font-medium tracking-tight text-white">S'inscrire</h2>
-                  <p className="mt-1.5 text-[15px] text-white/50">Créez votre compte.</p>
+                  <Dialog.Title className="text-2xl font-medium tracking-tight text-white">S'inscrire</Dialog.Title>
+                  <Dialog.Description className="mt-1.5 text-[15px] text-white/50">Créez votre compte.</Dialog.Description>
                 </div>
 
                 {sSuccess ? (
