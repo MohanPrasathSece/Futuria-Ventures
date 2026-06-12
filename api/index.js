@@ -20,9 +20,10 @@ const BLOB_FILE_NAME = 'users.xlsx';
 // Helper to get or create workbook from Vercel Blob
 const getWorkbookFromBlob = async () => {
   if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    console.warn("No BLOB_READ_WRITE_TOKEN found, using local users.xlsx");
-    if (fs.existsSync(BLOB_FILE_NAME)) {
-      return xlsx.readFile(BLOB_FILE_NAME);
+    const localFile = process.env.VERCEL ? '/tmp/users.xlsx' : BLOB_FILE_NAME;
+    console.warn("No BLOB_READ_WRITE_TOKEN found, using local fallback: " + localFile);
+    if (fs.existsSync(localFile)) {
+      return xlsx.readFile(localFile);
     }
     const wb = xlsx.utils.book_new();
     xlsx.utils.book_append_sheet(wb, xlsx.utils.json_to_sheet([]), 'Users');
@@ -54,7 +55,8 @@ const getWorkbookFromBlob = async () => {
 // Helper to save workbook to Vercel Blob
 const saveWorkbookToBlob = async (wb) => {
   if (!process.env.BLOB_READ_WRITE_TOKEN) {
-    xlsx.writeFile(wb, BLOB_FILE_NAME);
+    const localFile = process.env.VERCEL ? '/tmp/users.xlsx' : BLOB_FILE_NAME;
+    xlsx.writeFile(wb, localFile);
     return;
   }
   const buffer = xlsx.write(wb, { type: 'buffer', bookType: 'xlsx' });
