@@ -177,26 +177,6 @@ app.post('/api/contact', async (req, res) => {
       return res.status(400).json({ error: 'Name and email are required' });
     }
 
-    const wb = await getWorkbookFromBlob();
-    if (!wb.Sheets['Contacts']) {
-      xlsx.utils.book_append_sheet(wb, xlsx.utils.json_to_sheet([]), 'Contacts');
-    }
-    
-    const ws = wb.Sheets['Contacts'];
-    const contacts = xlsx.utils.sheet_to_json(ws);
-
-    contacts.push({
-      name,
-      email,
-      number: number || '',
-      amount: amount || '',
-      message,
-      submittedAt: new Date().toISOString()
-    });
-
-    wb.Sheets['Contacts'] = xlsx.utils.json_to_sheet(contacts);
-    await saveWorkbookToBlob(wb);
-
     // Send to CRM
     await sendToCRM({ name, email, number, amount, message });
 
