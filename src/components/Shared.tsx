@@ -106,6 +106,14 @@ export function Contact() {
       e.email = "Entrez un e-mail valide";
     if (form.message.trim() && form.message.length > 1000)
       e.message = "Parlez-nous un peu de vos objectifs (max 1000)";
+
+    const cleanNum = form.number.replace(/\s+/g, "");
+    if (!cleanNum) {
+      e.number = "Veuillez entrer un numéro de téléphone";
+    } else if (!/^(\+41|0041|0)?[1-9]\d{8}$/.test(cleanNum)) {
+      e.number = "Veuillez entrer un numéro suisse valide (ex: 079 123 45 67)";
+    }
+
     return e;
   };
 
