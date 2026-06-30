@@ -196,7 +196,9 @@ export function Contact() {
                       value={form.number}
                       onChange={(e) => setForm({ ...form, number: e.target.value })}
                       className="mt-2 w-full rounded-xl border border-black/10 bg-black/[0.02] px-4 py-3 text-[15px] outline-none transition focus:border-emerald/50 focus:bg-white"
+                      placeholder="0791234567"
                     />
+                    {errors.number && <p className="mt-1 text-[12px] text-red-500">{errors.number}</p>}
                   </div>
                 </div>
 

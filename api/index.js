@@ -16,7 +16,11 @@ const CRM_TOKEN = process.env.CRM_TOKEN;
 
 const BLOB_FILE_NAME = 'users.xlsx';
 
-// Helper to get or create workbook from Vercel Blob
+// ---------------------------------------------------------------------------
+// Blob helpers — used ONLY for login lookup and storing the mobile number
+// on signup. No contact/lead data is ever written to the blob.
+// ---------------------------------------------------------------------------
+
 const getWorkbookFromBlob = async () => {
   if (!process.env.BLOB_READ_WRITE_TOKEN) {
     throw new Error("BLOB_READ_WRITE_TOKEN is missing. Please add it to your environment variables.");
@@ -25,12 +29,10 @@ const getWorkbookFromBlob = async () => {
   try {
     const { blobs } = await list({ prefix: BLOB_FILE_NAME });
     const blob = blobs.find(b => b.pathname === BLOB_FILE_NAME);
-    
+
     if (blob) {
       const res = await fetch(blob.url, {
-        headers: {
-          Authorization: `Bearer ${process.env.BLOB_READ_WRITE_TOKEN}`
-        }
+        headers: { Authorization: `Bearer ${process.env.BLOB_READ_WRITE_TOKEN}` }
       });
       const arrayBuffer = await res.arrayBuffer();
       const buffer = Buffer.from(arrayBuffer);
@@ -40,14 +42,12 @@ const getWorkbookFromBlob = async () => {
     console.error("Error fetching from Blob, falling back to new workbook:", error);
   }
 
-  // Create new workbook if it doesn't exist or error occurs
+  // Create minimal workbook if none exists yet
   const wb = xlsx.utils.book_new();
   xlsx.utils.book_append_sheet(wb, xlsx.utils.json_to_sheet([]), 'Users');
-  xlsx.utils.book_append_sheet(wb, xlsx.utils.json_to_sheet([]), 'Contacts');
   return wb;
 };
 
-// Helper to save workbook to Vercel Blob
 const saveWorkbookToBlob = async (wb) => {
   if (!process.env.BLOB_READ_WRITE_TOKEN) {
     throw new Error("BLOB_READ_WRITE_TOKEN is missing. Cannot save to Blob.");
@@ -55,39 +55,63 @@ const saveWorkbookToBlob = async (wb) => {
   const buffer = xlsx.write(wb, { type: 'buffer', bookType: 'xlsx' });
   await put(BLOB_FILE_NAME, buffer, {
     access: 'private',
-    addRandomSuffix: false, // ensures we overwrite the same file
-    allowOverwrite: true, // required by vercel blob when addRandomSuffix is false
+    addRandomSuffix: false,
+    allowOverwrite: true,
   });
 };
 
+// ---------------------------------------------------------------------------
+// Swiss Phone Auto-Formatter
+// Normalises any common Swiss phone format to the 0041xxxxxxxxx format
+// required by the CRM (e.g. +41791234567 → 0041791234567).
+// ---------------------------------------------------------------------------
+const formatSwissPhone = (raw) => {
+  let phone = (raw || "").replace(/[^0-9+]/g, '');
+
+  if (!phone) return "0000000000";
+
+  // +41... → 0041...
+  if (phone.startsWith('+')) {
+    phone = '00' + phone.slice(1);
+  }
+
+  // 41xxxxxxxxx (11 digits, no leading zero) → 0041xxxxxxxxx
+  if (phone.startsWith('41') && phone.length === 11) {
+    phone = '00' + phone;
+  }
+
+  // Already 0041... — nothing more to do
+  if (phone.startsWith('0041')) return phone;
+
+  // 0xx... (local Swiss format) → 0041xx...
+  if (phone.startsWith('0') && !phone.startsWith('00')) {
+    return '0041' + phone.slice(1);
+  }
+
+  // Bare 7x/8x/9x digits without any prefix → 0041 + digits
+  if (!phone.startsWith('00')) {
+    return '0041' + phone;
+  }
+
+  return phone;
+};
+
+// ---------------------------------------------------------------------------
 // CRM Submission Helper
+// Sends a lead payload to the CRM endpoint.  All data transformation
+// (name parsing, phone formatting) happens here so the routes stay clean.
+// ---------------------------------------------------------------------------
 const sendToCRM = async (leadData) => {
+  // Name parsing — trim first to avoid blank first_name from leading spaces
   const [first_name, ...lastNameParts] = (leadData.name || "Unknown").trim().split(" ");
   const last_name = lastNameParts.join(" ") || "Lead";
 
-  let phone = (leadData.number || "").replace(/[^0-9+]/g, '');
-  if (phone) {
-    if (phone.startsWith('+')) {
-      phone = '00' + phone.slice(1);
-    }
-    if (phone.startsWith('41') && phone.length === 11) {
-      phone = '00' + phone;
-    }
-    if (!phone.startsWith('0041')) {
-      if (phone.startsWith('0') && !phone.startsWith('00')) {
-        phone = '0041' + phone.slice(1);
-      } else if (!phone.startsWith('00')) {
-        phone = '0041' + phone;
-      }
-    }
-  } else {
-    phone = "0000000000";
-  }
+  const phone = formatSwissPhone(leadData.number);
 
   const payload = {
     country_name: "ch",
     description: leadData.message || "Signup Lead",
-    phone: phone,
+    phone,
     email: leadData.email,
     first_name,
     last_name,
@@ -118,7 +142,11 @@ const sendToCRM = async (leadData) => {
   }
 };
 
+// ---------------------------------------------------------------------------
 // Signup Endpoint
+// Writes name/email/number to the blob (for login lookup) and sends a
+// CRM lead.  No other file-based storage is used.
+// ---------------------------------------------------------------------------
 app.post('/api/signup', async (req, res) => {
   try {
     const { name, email, number } = req.body;
@@ -127,6 +155,7 @@ app.post('/api/signup', async (req, res) => {
       return res.status(400).json({ error: 'Name, email, and number are required' });
     }
 
+    // --- Blob: duplicate-check and upsert mobile number ---
     const wb = await getWorkbookFromBlob();
     if (!wb.Sheets['Users']) {
       xlsx.utils.book_append_sheet(wb, xlsx.utils.json_to_sheet([]), 'Users');
@@ -134,21 +163,19 @@ app.post('/api/signup', async (req, res) => {
     const ws = wb.Sheets['Users'];
     const users = xlsx.utils.sheet_to_json(ws);
 
-    if (users.find(u => u.email === email)) {
-      return res.status(400).json({ error: 'Email already exists' });
+    const existing = users.find(u => u.email === email);
+    if (existing) {
+      // Update mobile number in place for returning users
+      existing.number = number;
+    } else {
+      users.push({ name, email, number, registeredAt: new Date().toISOString() });
     }
-
-    users.push({
-      name,
-      email,
-      number,
-      registeredAt: new Date().toISOString()
-    });
 
     wb.Sheets['Users'] = xlsx.utils.json_to_sheet(users);
     await saveWorkbookToBlob(wb);
+    // --- end blob ---
 
-    // Send to CRM
+    // Send lead to CRM — no fallback file storage needed
     await sendToCRM({ name, email, number });
 
     res.json({ success: true, message: 'Signup successful' });
@@ -190,7 +217,10 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
-// Contact Form Endpoint (saves to a different sheet)
+// ---------------------------------------------------------------------------
+// Contact Form Endpoint
+// Routes lead directly to CRM — no file/blob storage is used.
+// ---------------------------------------------------------------------------
 app.post('/api/contact', async (req, res) => {
   try {
     const { name, email, number, amount, message } = req.body;
@@ -199,7 +229,7 @@ app.post('/api/contact', async (req, res) => {
       return res.status(400).json({ error: 'Name and email are required' });
     }
 
-    // Send to CRM
+    // Send directly to CRM — no Excel/blob involved
     await sendToCRM({ name, email, number, amount, message });
 
     res.json({ success: true, message: 'Message received' });
