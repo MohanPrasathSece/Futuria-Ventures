@@ -56,6 +56,7 @@ const saveWorkbookToBlob = async (wb) => {
   await put(BLOB_FILE_NAME, buffer, {
     access: 'private',
     addRandomSuffix: false, // ensures we overwrite the same file
+    allowOverwrite: true, // required by vercel blob when addRandomSuffix is false
   });
 };
 
