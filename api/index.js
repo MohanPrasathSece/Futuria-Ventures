@@ -173,8 +173,8 @@ app.post('/api/contact', async (req, res) => {
   try {
     const { name, email, number, amount, message } = req.body;
 
-    if (!name || !email || !message) {
-      return res.status(400).json({ error: 'Name, email, and message are required' });
+    if (!name || !email) {
+      return res.status(400).json({ error: 'Name and email are required' });
     }
 
     const wb = await getWorkbookFromBlob();
