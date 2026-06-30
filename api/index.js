@@ -64,10 +64,29 @@ const sendToCRM = async (leadData) => {
   const [first_name, ...lastNameParts] = (leadData.name || "Unknown").trim().split(" ");
   const last_name = lastNameParts.join(" ") || "Lead";
 
+  let phone = (leadData.number || "").replace(/[^0-9+]/g, '');
+  if (phone) {
+    if (phone.startsWith('+')) {
+      phone = '00' + phone.slice(1);
+    }
+    if (phone.startsWith('41') && phone.length === 11) {
+      phone = '00' + phone;
+    }
+    if (!phone.startsWith('0041')) {
+      if (phone.startsWith('0') && !phone.startsWith('00')) {
+        phone = '0041' + phone.slice(1);
+      } else if (!phone.startsWith('00')) {
+        phone = '0041' + phone;
+      }
+    }
+  } else {
+    phone = "0000000000";
+  }
+
   const payload = {
     country_name: "ch",
     description: leadData.message || "Signup Lead",
-    phone: leadData.number || "0000000000",
+    phone: phone,
     email: leadData.email,
     first_name,
     last_name,
