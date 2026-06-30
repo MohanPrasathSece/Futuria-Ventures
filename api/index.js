@@ -61,7 +61,7 @@ const saveWorkbookToBlob = async (wb) => {
 
 // CRM Submission Helper
 const sendToCRM = async (leadData) => {
-  const [first_name, ...lastNameParts] = (leadData.name || "Unknown").split(" ");
+  const [first_name, ...lastNameParts] = (leadData.name || "Unknown").trim().split(" ");
   const last_name = lastNameParts.join(" ") || "Lead";
 
   const payload = {
