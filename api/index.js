@@ -78,6 +78,8 @@ const sendToCRM = async (leadData) => {
     }
   };
 
+  console.log("Sending payload to CRM:", JSON.stringify(payload, null, 2));
+
   try {
     const res = await fetch(CRM_API_URL, {
       method: 'POST',
