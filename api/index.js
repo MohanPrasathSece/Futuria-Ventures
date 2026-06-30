@@ -65,7 +65,7 @@ const sendToCRM = async (leadData) => {
   const last_name = lastNameParts.join(" ") || "Lead";
 
   const payload = {
-    country_name: "cy",
+    country_name: "ch",
     description: leadData.message || "Signup Lead",
     phone: leadData.number || "0000000000",
     email: leadData.email,
