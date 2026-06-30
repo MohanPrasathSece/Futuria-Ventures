@@ -104,7 +104,7 @@ export function Contact() {
     if (!form.name.trim() || form.name.length > 100) e.name = "Veuillez entrer votre nom (max 100)";
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email) || form.email.length > 255)
       e.email = "Entrez un e-mail valide";
-    if (!form.message.trim() || form.message.length > 1000)
+    if (form.message.trim() && form.message.length > 1000)
       e.message = "Parlez-nous un peu de vos objectifs (max 1000)";
     return e;
   };
