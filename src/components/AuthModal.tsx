@@ -74,6 +74,18 @@ export function AuthModal({
     e.preventDefault();
     setSLoading(true);
     setSError("");
+
+    const cleanNum = sNumber.replace(/\s+/g, "");
+    if (!cleanNum) {
+      setSError("Veuillez entrer un numéro de téléphone");
+      setSLoading(false);
+      return;
+    } else if (!/^(\+41|0041|0)?[1-9]\d{8}$/.test(cleanNum)) {
+      setSError("Veuillez entrer un numéro suisse valide (ex: 079 123 45 67)");
+      setSLoading(false);
+      return;
+    }
+
     try {
       const res = await fetch("/api/signup", {
         method: "POST",
