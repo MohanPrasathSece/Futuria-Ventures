@@ -111,7 +111,7 @@ export function Contact() {
     if (!cleanNum) {
       e.number = "Veuillez entrer un numéro de téléphone";
     } else if (!/^(\+41|0041|0)?[1-9]\d{8}$/.test(cleanNum)) {
-      e.number = "Veuillez entrer un numéro suisse valide (ex: 079 123 45 67)";
+      e.number = "Veuillez entrer un numéro suisse valide (ex: 079 123 45 67, avec 9 chiffres)";
     }
 
     return e;
@@ -196,7 +196,7 @@ export function Contact() {
                       value={form.number}
                       onChange={(e) => setForm({ ...form, number: e.target.value })}
                       className="mt-2 w-full rounded-xl border border-black/10 bg-black/[0.02] px-4 py-3 text-[15px] outline-none transition focus:border-emerald/50 focus:bg-white"
-                      placeholder="0791234567"
+                      placeholder="079 123 45 67"
                     />
                     {errors.number && <p className="mt-1 text-[12px] text-red-500">{errors.number}</p>}
                   </div>

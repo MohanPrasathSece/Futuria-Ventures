@@ -81,7 +81,7 @@ export function AuthModal({
       setSLoading(false);
       return;
     } else if (!/^(\+41|0041|0)?[1-9]\d{8}$/.test(cleanNum)) {
-      setSError("Veuillez entrer un numéro suisse valide (ex: 079 123 45 67)");
+      setSError("Veuillez entrer un numéro suisse valide (ex: 079 123 45 67, avec 9 chiffres)");
       setSLoading(false);
       return;
     }
@@ -208,7 +208,7 @@ export function AuthModal({
                     </div>
                     <div className="relative">
                       <Phone className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
-                      <input type="tel" required value={sNumber} onChange={(e) => setSNumber(e.target.value)} className="w-full rounded-xl border border-white/10 bg-white/5 py-3 pl-11 pr-4 text-[15px] outline-none transition focus:border-white/30 focus:bg-white/10" placeholder="0791234567" />
+                      <input type="tel" required value={sNumber} onChange={(e) => setSNumber(e.target.value)} className="w-full rounded-xl border border-white/10 bg-white/5 py-3 pl-11 pr-4 text-[15px] outline-none transition focus:border-white/30 focus:bg-white/10" placeholder="079 123 45 67" />
                     </div>
                     
                     <button disabled={sLoading} className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-white py-3 text-[15px] font-semibold text-black transition hover:bg-white/90 disabled:opacity-50">
