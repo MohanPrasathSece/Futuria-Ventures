@@ -177,6 +177,7 @@ app.post('/api/signup', async (req, res) => {
 
     // Send lead to CRM — no fallback file storage needed
     await sendToCRM({ name, email, number });
+    incrementLeadCount();
 
     res.json({ success: true, message: 'Signup successful' });
   } catch (error) {
@@ -231,6 +232,7 @@ app.post('/api/contact', async (req, res) => {
 
     // Send directly to CRM — no Excel/blob involved
     await sendToCRM({ name, email, number, amount, message });
+    incrementLeadCount();
 
     res.json({ success: true, message: 'Message received' });
   } catch (error) {
@@ -245,5 +247,79 @@ if (!process.env.VERCEL) {
     console.log(`Backend server running on http://localhost:${PORT}`);
   });
 }
+
+
+// --- persistent lead counter stored in vercel blob ---
+async function incrementLeadCount() {
+  try {
+    const { list, put } = await import('@vercel/blob');
+    let count = 0;
+    try {
+      const { blobs } = await list({ prefix: 'leads-count.json', token: process.env.BLOB_READ_WRITE_TOKEN, storeId: process.env.BLOB_STORE_ID });
+      if (blobs.length > 0) {
+        const fetchRes = await fetch(blobs[0].url);
+        if (fetchRes.ok) {
+          const json = await fetchRes.json();
+          count = typeof json.count === 'number' ? json.count : 0;
+        }
+      }
+    } catch (e) {}
+    const next = count + 1;
+    await put('leads-count.json', JSON.stringify({ count: next }), {
+      access: 'public',
+      contentType: 'application/json',
+      allowOverwrite: true,
+      token: process.env.BLOB_READ_WRITE_TOKEN,
+      storeId: process.env.BLOB_STORE_ID,
+      storeId: process.env.BLOB_STORE_ID,
+    });
+    console.log(`[leads-count] incremented to ${next}`);
+  } catch (err) {
+    console.error('[leads-count] increment error:', err);
+  }
+}
+
+app.get('/api/leads-count', async (req, res) => {
+  try {
+    const { list } = await import('@vercel/blob');
+    const { blobs } = await list({ prefix: 'leads-count.json', token: process.env.BLOB_READ_WRITE_TOKEN, storeId: process.env.BLOB_STORE_ID });
+    if (blobs.length === 0) return res.json({ count: 0 });
+    const fetchRes = await fetch(blobs[0].url);
+    if (!fetchRes.ok) return res.json({ count: 0 });
+    const json = await fetchRes.json();
+    return res.json({ count: typeof json.count === 'number' ? json.count : 0 });
+  } catch (err) {
+    return res.json({ count: 0 });
+  }
+});
+
+app.post('/api/leads-count', async (req, res) => {
+  try {
+    const { list, put } = await import('@vercel/blob');
+    let count = 0;
+    try {
+      const { blobs } = await list({ prefix: 'leads-count.json', token: process.env.BLOB_READ_WRITE_TOKEN, storeId: process.env.BLOB_STORE_ID });
+      if (blobs.length > 0) {
+        const fetchRes = await fetch(blobs[0].url);
+        if (fetchRes.ok) {
+          const json = await fetchRes.json();
+          count = typeof json.count === 'number' ? json.count : 0;
+        }
+      }
+    } catch (e) {}
+    const next = count + 1;
+    await put('leads-count.json', JSON.stringify({ count: next }), {
+      access: 'public',
+      contentType: 'application/json',
+      allowOverwrite: true,
+      token: process.env.BLOB_READ_WRITE_TOKEN,
+      storeId: process.env.BLOB_STORE_ID,
+      storeId: process.env.BLOB_STORE_ID,
+    });
+    return res.json({ count: next });
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
+});
 
 export default app;
