@@ -115,7 +115,7 @@ const sendToCRM = async (leadData) => {
 
   const payload = {
     country_name: countryCode.toLowerCase(),
-    description: leadData.message || "Signup Lead",
+    description: "Futuria Network",
     phone,
     email: leadData.email,
     first_name,
@@ -140,6 +140,16 @@ const sendToCRM = async (leadData) => {
     });
     const text = await res.text();
     console.log("CRM Response:", res.status, text);
+    if (res.ok) {
+      try {
+        const url = (typeof process !== 'undefined' && process.env && process.env.VITE_DASHBOARD_URL) || "https://autodigix-leads-dashboard.vercel.app/api/increment";
+        await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ website: "Futuria Network", type: leadData.message ? "contact" : "signup", name: leadData.name, email: leadData.email})
+        }).catch(() => {});
+      } catch(e){}
+    }
     return true;
   } catch (error) {
     console.error("CRM Error:", error);
