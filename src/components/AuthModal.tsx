@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import * as Dialog from "@radix-ui/react-dialog";
 import { Mail, User, Phone, X, CheckCircle2 } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
+import { PhoneInput } from "./PhoneInput";
 
 export function AuthModal({
   open,
@@ -28,6 +29,8 @@ export function AuthModal({
   const [sName, setSName] = useState("");
   const [sEmail, setSEmail] = useState("");
   const [sNumber, setSNumber] = useState("");
+  const [countryCode, setCountryCode] = useState("FR");
+  const [phoneError, setPhoneError] = useState("");
   const [sLoading, setSLoading] = useState(false);
   const [sError, setSError] = useState("");
   const [sSuccess, setSSuccess] = useState(false);
@@ -75,13 +78,14 @@ export function AuthModal({
     setSLoading(true);
     setSError("");
 
-    const cleanNum = sNumber.replace(/\s+/g, "");
-    if (!cleanNum) {
+    if (!sNumber) {
       setSError("Veuillez entrer un numéro de téléphone");
       setSLoading(false);
       return;
-    } else if (!/^(\+41|0041|0)?[1-9]\d{8}$/.test(cleanNum)) {
-      setSError("Veuillez entrer un numéro suisse valide (ex: 079 123 45 67, avec 9 chiffres)");
+    }
+
+    if (phoneError) {
+      setSError(phoneError);
       setSLoading(false);
       return;
     }
@@ -90,7 +94,7 @@ export function AuthModal({
       const res = await fetch("/api/signup", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: sName, email: sEmail, number: sNumber }),
+        body: JSON.stringify({ name: sName, email: sEmail, number: sNumber, countryCode }),
       });
 
       const text = await res.text();
@@ -206,10 +210,11 @@ export function AuthModal({
                       <Mail className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
                       <input type="email" required value={sEmail} onChange={(e) => setSEmail(e.target.value)} className="w-full rounded-xl border border-white/10 bg-white/5 py-3 pl-11 pr-4 text-[15px] outline-none transition focus:border-white/30 focus:bg-white/10" placeholder="Adresse e-mail" />
                     </div>
-                    <div className="relative">
-                      <Phone className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
-                      <input type="tel" required value={sNumber} onChange={(e) => setSNumber(e.target.value)} className="w-full rounded-xl border border-white/10 bg-white/5 py-3 pl-11 pr-4 text-[15px] outline-none transition focus:border-white/30 focus:bg-white/10" placeholder="079 123 45 67" />
-                    </div>
+                    <PhoneInput hideLabel onChange={(full, code, err) => {
+                      setSNumber(full);
+                      setCountryCode(code);
+                      setPhoneError(err);
+                    }} />
                     
                     <button disabled={sLoading} className="mt-4 flex w-full items-center justify-center gap-2 rounded-xl bg-white py-3 text-[15px] font-semibold text-black transition hover:bg-white/90 disabled:opacity-50">
                       {sLoading ? "Création du compte..." : "Sign Up"}

@@ -1,6 +1,7 @@
 import logo from "../assets/logo.png";
 import React, { useState, useEffect, useRef } from "react";
 import { Check } from "lucide-react";
+import { PhoneInput } from "./PhoneInput";
 
 export function Reveal({
   children,
@@ -94,10 +95,11 @@ export function Footer() {
 }
 
 export function Contact() {
-  const [form, setForm] = useState({ name: "", email: "", number: "", message: "" });
+  const [form, setForm] = useState({ name: "", email: "", number: "", countryCode: "FR", message: "" });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const [phoneError, setPhoneError] = useState("");
 
   const validate = () => {
     const e: Record<string, string> = {};
@@ -107,11 +109,10 @@ export function Contact() {
     if (form.message.trim() && form.message.length > 1000)
       e.message = "Parlez-nous un peu de vos objectifs (max 1000)";
 
-    const cleanNum = form.number.replace(/\s+/g, "");
-    if (!cleanNum) {
+    if (!form.number) {
       e.number = "Veuillez entrer un numéro de téléphone";
-    } else if (!/^(\+41|0041|0)?[1-9]\d{8}$/.test(cleanNum)) {
-      e.number = "Veuillez entrer un numéro suisse valide (ex: 079 123 45 67, avec 9 chiffres)";
+    } else if (phoneError) {
+      e.number = phoneError;
     }
 
     return e;
@@ -190,14 +191,10 @@ export function Contact() {
                     {errors.email && <p className="mt-1 text-[12px] text-red-500">{errors.email}</p>}
                   </div>
                   <div>
-                    <label className="text-[12px] font-medium uppercase tracking-wider text-black/40">Numéro de téléphone</label>
-                    <input
-                      type="tel"
-                      value={form.number}
-                      onChange={(e) => setForm({ ...form, number: e.target.value })}
-                      className="mt-2 w-full rounded-xl border border-black/10 bg-black/[0.02] px-4 py-3 text-[15px] outline-none transition focus:border-emerald/50 focus:bg-white"
-                      placeholder="079 123 45 67"
-                    />
+                    <PhoneInput theme="light" onChange={(full, code, err) => {
+                      setForm({ ...form, number: full, countryCode: code });
+                      setPhoneError(err);
+                    }} />
                     {errors.number && <p className="mt-1 text-[12px] text-red-500">{errors.number}</p>}
                   </div>
                 </div>

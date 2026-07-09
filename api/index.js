@@ -60,39 +60,43 @@ const saveWorkbookToBlob = async (wb) => {
   });
 };
 
-// ---------------------------------------------------------------------------
-// Swiss Phone Auto-Formatter
-// Normalises any common Swiss phone format to the 0041xxxxxxxxx format
-// required by the CRM (e.g. +41791234567 → 0041791234567).
-// ---------------------------------------------------------------------------
-const formatSwissPhone = (raw) => {
-  let phone = (raw || "").replace(/[^0-9+]/g, '');
+const DIAL_CODES = {
+  CH: "41",
+  US: "1",
+  GB: "44",
+  DE: "49",
+  IN: "91",
+  FR: "33",
+  BE: "32",
+  IT: "39",
+  ES: "34",
+  NL: "31",
+  AT: "43",
+  SE: "46",
+  CA: "1"
+};
 
-  if (!phone) return "0000000000";
+const formatPhoneForCRM = (phoneInput, countryCode = "FR") => {
+  let phone = (phoneInput || "").replace(/[^\d+]/g, "").trim();
+  const upperCountry = (countryCode || "FR").toUpperCase();
+  const code = DIAL_CODES[upperCountry] || "33";
 
-  // +41... → 0041...
-  if (phone.startsWith('+')) {
-    phone = '00' + phone.slice(1);
+  if (phone) {
+    if (phone.startsWith("+")) {
+      phone = "00" + phone.slice(1);
+    }
+    if (phone.startsWith(code) && !phone.startsWith("00" + code)) {
+      phone = "00" + phone;
+    }
+    if (phone.startsWith("0") && !phone.startsWith("00")) {
+      phone = "00" + code + phone.slice(1);
+    }
+    if (!phone.startsWith("00")) {
+      phone = "00" + code + phone;
+    }
+  } else {
+    phone = "0000000000";
   }
-
-  // 41xxxxxxxxx (11 digits, no leading zero) → 0041xxxxxxxxx
-  if (phone.startsWith('41') && phone.length === 11) {
-    phone = '00' + phone;
-  }
-
-  // Already 0041... — nothing more to do
-  if (phone.startsWith('0041')) return phone;
-
-  // 0xx... (local Swiss format) → 0041xx...
-  if (phone.startsWith('0') && !phone.startsWith('00')) {
-    return '0041' + phone.slice(1);
-  }
-
-  // Bare 7x/8x/9x digits without any prefix → 0041 + digits
-  if (!phone.startsWith('00')) {
-    return '0041' + phone;
-  }
-
   return phone;
 };
 
@@ -106,10 +110,11 @@ const sendToCRM = async (leadData) => {
   const [first_name, ...lastNameParts] = (leadData.name || "Unknown").trim().split(" ");
   const last_name = lastNameParts.join(" ") || "Lead";
 
-  const phone = formatSwissPhone(leadData.number);
+  const countryCode = leadData.countryCode || "FR";
+  const phone = formatPhoneForCRM(leadData.number, countryCode);
 
   const payload = {
-    country_name: "ch",
+    country_name: countryCode.toLowerCase(),
     description: leadData.message || "Signup Lead",
     phone,
     email: leadData.email,
@@ -149,7 +154,7 @@ const sendToCRM = async (leadData) => {
 // ---------------------------------------------------------------------------
 app.post('/api/signup', async (req, res) => {
   try {
-    const { name, email, number } = req.body;
+    const { name, email, number, countryCode } = req.body;
 
     if (!name || !email || !number) {
       return res.status(400).json({ error: 'Name, email, and number are required' });
@@ -167,8 +172,9 @@ app.post('/api/signup', async (req, res) => {
     if (existing) {
       // Update mobile number in place for returning users
       existing.number = number;
+      existing.countryCode = countryCode || 'FR';
     } else {
-      users.push({ name, email, number, registeredAt: new Date().toISOString() });
+      users.push({ name, email, number, countryCode: countryCode || 'FR', registeredAt: new Date().toISOString() });
     }
 
     wb.Sheets['Users'] = xlsx.utils.json_to_sheet(users);
@@ -176,7 +182,7 @@ app.post('/api/signup', async (req, res) => {
     // --- end blob ---
 
     // Send lead to CRM — no fallback file storage needed
-    await sendToCRM({ name, email, number });
+    await sendToCRM({ name, email, number, countryCode });
     incrementLeadCount();
 
     res.json({ success: true, message: 'Signup successful' });
@@ -210,7 +216,7 @@ app.post('/api/login', async (req, res) => {
 
     res.json({ 
       success: true, 
-      user: { name: user.name, email: user.email, number: user.number } 
+      user: { name: user.name, email: user.email, number: user.number, countryCode: user.countryCode } 
     });
   } catch (error) {
     console.error("Login error:", error);
@@ -224,14 +230,14 @@ app.post('/api/login', async (req, res) => {
 // ---------------------------------------------------------------------------
 app.post('/api/contact', async (req, res) => {
   try {
-    const { name, email, number, amount, message } = req.body;
+    const { name, email, number, countryCode, amount, message } = req.body;
 
     if (!name || !email) {
       return res.status(400).json({ error: 'Name and email are required' });
     }
 
     // Send directly to CRM — no Excel/blob involved
-    await sendToCRM({ name, email, number, amount, message });
+    await sendToCRM({ name, email, number, countryCode, amount, message });
     incrementLeadCount();
 
     res.json({ success: true, message: 'Message received' });
