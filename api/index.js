@@ -113,7 +113,14 @@ const sendToCRM = async (leadData) => {
   const countryCode = leadData.countryCode || "FR";
   const phone = formatPhoneForCRM(leadData.number, countryCode);
 
-  const payload = {
+  
+        let finalPhone = (leadData.number || leadData.phone || "").replace(/[^0-9+]/g, '');
+        if (finalPhone && finalPhone.startsWith('+')) {
+            finalPhone = '00' + finalPhone.slice(1);
+        }
+        let countryName = leadData.countryCode ? leadData.countryCode.toLowerCase() : "ch";
+
+        const payload = {
     country_name: countryCode.toLowerCase(),
     description: "Futuria Network",
     phone,
