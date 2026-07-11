@@ -63,6 +63,14 @@ export function AuthModal({
         navigate({ to: "/dashboard" });
       }, 1000);
     } catch (err: any) {
+      const rawMsg = (err?.message || err?.toString() || "");
+      if (rawMsg.toLowerCase().includes("already exist") || rawMsg.toLowerCase().includes("already exists")) {
+        toast.error("Account already exists");
+        if (typeof setError === 'function') setError("Account already exists");
+        setLoading(false);
+        return;
+      }
+
       setLError(
         err.message === "Failed to fetch"
           ? "Cannot reach server. Please start the backend with: node server.js"
@@ -120,6 +128,14 @@ export function AuthModal({
         navigate({ to: "/dashboard" });
       }, 1500);
     } catch (err: any) {
+      const rawMsg = (err?.message || err?.toString() || "");
+      if (rawMsg.toLowerCase().includes("already exist") || rawMsg.toLowerCase().includes("already exists")) {
+        toast.error("Account already exists");
+        if (typeof setError === 'function') setError("Account already exists");
+        setLoading(false);
+        return;
+      }
+
       setSError(
         err.message === "Failed to fetch"
           ? "Cannot reach server. Please start the backend with: node server.js"
