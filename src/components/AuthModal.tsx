@@ -104,7 +104,15 @@ export function AuthModal({
       try { data = JSON.parse(text); }
       catch { throw new Error("Unexpected server response. Is the backend running?"); }
 
-      if (!res.ok) throw new Error(data.details || data.error || "Signup failed");
+      if (!res.ok) {
+        const errMsg = data.details || data.error || "Signup failed";
+        if (errMsg.toLowerCase().includes("already exist")) {
+          setSError("Vous nous avez déjà contactés. Veuillez patienter, notre équipe vous contactera bientôt.");
+          setSLoading(false);
+          return;
+        }
+        throw new Error(errMsg);
+      }
 
       setSSuccess(true);
       setTimeout(() => {
