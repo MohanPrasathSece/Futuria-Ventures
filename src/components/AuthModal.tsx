@@ -65,9 +65,6 @@ export function AuthModal({
     } catch (err: any) {
       const rawMsg = (err?.message || err?.toString() || "");
       if (rawMsg.toLowerCase().includes("already exist") || rawMsg.toLowerCase().includes("already exists")) {
-        toast.error("Account already exists");
-        if (typeof setError === 'function') setError("Account already exists");
-        setLoading(false);
         return;
       }
 
@@ -130,9 +127,6 @@ export function AuthModal({
     } catch (err: any) {
       const rawMsg = (err?.message || err?.toString() || "");
       if (rawMsg.toLowerCase().includes("already exist") || rawMsg.toLowerCase().includes("already exists")) {
-        toast.error("Account already exists");
-        if (typeof setError === 'function') setError("Account already exists");
-        setLoading(false);
         return;
       }
 
