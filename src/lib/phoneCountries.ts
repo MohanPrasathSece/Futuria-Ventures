@@ -20,6 +20,15 @@ export const COUNTRIES: Country[] = [
   { code: "US", name: "United States",    dial: "+1",   flag: "🇺🇸", localLen: 10, placeholder: "555 012 3456" },
   { code: "AT", name: "Austria",          dial: "+43",  flag: "🇦🇹", localLen: [7, 13], placeholder: "664 1234567" },
   { code: "SE", name: "Sweden",           dial: "+46",  flag: "🇸🇪", localLen: 9,  placeholder: "70 123 45 67" },
+  { code: "AU", name: "Australia",        dial: "+61",  flag: "🇦🇺", localLen: 9,  placeholder: "412 345 678" },
+  { code: "IN", name: "India",            dial: "+91",  flag: "🇮🇳", localLen: 10, placeholder: "98765 43210" },
+  { code: "AE", name: "UAE",              dial: "+971", flag: "🇦🇪", localLen: 9,  placeholder: "50 123 4567" },
+  { code: "SG", name: "Singapore",        dial: "+65",  flag: "🇸🇬", localLen: 8,  placeholder: "8123 4567" },
+  { code: "ZA", name: "South Africa",     dial: "+27",  flag: "🇿🇦", localLen: 9,  placeholder: "82 123 4567" },
+  { code: "BR", name: "Brazil",           dial: "+55",  flag: "🇧🇷", localLen: [10, 11], placeholder: "11 91234 5678" },
+  { code: "MX", name: "Mexico",           dial: "+52",  flag: "🇲🇽", localLen: 10, placeholder: "55 1234 5678" },
+  { code: "JP", name: "Japan",            dial: "+81",  flag: "🇯🇵", localLen: [10, 11], placeholder: "90 1234 5678" },
+  { code: "CY", name: "Cyprus",           dial: "+357", flag: "🇨🇾", localLen: 8,  placeholder: "99 123456" },
 ];
 
 export function validateLocalPhone(local: string, country: Country): string {

@@ -95,7 +95,7 @@ export function Footer() {
 }
 
 export function Contact() {
-  const [form, setForm] = useState({ name: "", email: "", number: "", countryCode: "FR", message: "" });
+  const [form, setForm] = useState({ name: "", email: "", number: "", countryCode: "CH", message: "" });
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState<Record<string, string>>({});

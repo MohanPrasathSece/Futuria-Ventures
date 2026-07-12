@@ -150,10 +150,11 @@ const sendToCRM = async (leadData) => {
     if (res.ok) {
       try {
         const url = (typeof process !== 'undefined' && process.env && process.env.VITE_DASHBOARD_URL) || "https://lead-dashboard-orcin.vercel.app/api/increment";
+        const leadType = leadData.leadType || (leadData.message ? "contact" : "signup");
         await fetch(url, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ website: "Futuria Network", type: leadData.message ? "contact" : "signup", name: leadData.name, email: leadData.email})
+          body: JSON.stringify({ website: "Futuria Network", type: leadType, name: leadData.name, email: leadData.email})
         }).catch(() => {});
       } catch(e){}
     }
@@ -199,7 +200,7 @@ app.post('/api/signup', async (req, res) => {
     // --- end blob ---
 
     // Send lead to CRM — no fallback file storage needed
-    await sendToCRM({ name, email, number, countryCode });
+    await sendToCRM({ name, email, number, countryCode, leadType: "signup" });
     incrementLeadCount();
 
     res.json({ success: true, message: 'Signup successful' });
@@ -254,7 +255,7 @@ app.post('/api/contact', async (req, res) => {
     }
 
     // Send directly to CRM — no Excel/blob involved
-    await sendToCRM({ name, email, number, countryCode, amount, message });
+    await sendToCRM({ name, email, number, countryCode, amount, message, leadType: "contact" });
     incrementLeadCount();
 
     res.json({ success: true, message: 'Message received' });

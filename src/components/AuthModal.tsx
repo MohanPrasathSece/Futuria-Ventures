@@ -29,7 +29,7 @@ export function AuthModal({
   const [sName, setSName] = useState("");
   const [sEmail, setSEmail] = useState("");
   const [sNumber, setSNumber] = useState("");
-  const [countryCode, setCountryCode] = useState("FR");
+  const [countryCode, setCountryCode] = useState("CH");
   const [phoneError, setPhoneError] = useState("");
   const [sLoading, setSLoading] = useState(false);
   const [sError, setSError] = useState("");

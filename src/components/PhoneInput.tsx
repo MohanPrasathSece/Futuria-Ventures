@@ -13,7 +13,7 @@ interface PhoneInputProps {
 export function PhoneInput({
   onChange,
   disabled = false,
-  defaultCountry = "FR",
+  defaultCountry = "CH",
   theme = "dark",
   hideLabel = false,
 }: PhoneInputProps) {
@@ -95,10 +95,10 @@ export function PhoneInput({
                 : "border-black/10 bg-black/[0.02] text-black hover:bg-black/[0.05]"
             }`}
           >
-            <span className="text-lg leading-none">{selected.flag}</span>
-            <span className="font-mono text-xs font-semibold">{selected.dial}</span>
+            <span className="text-[15px]">{selected.flag}</span>
+            <span className="font-mono text-[14px] font-medium">{selected.dial}</span>
             <ChevronDown
-              className={`h-3 w-3 opacity-60 transition-transform duration-200 ${
+              className={`h-4 w-4 opacity-60 transition-transform duration-200 ${
                 open ? "rotate-180" : ""
               }`}
             />
