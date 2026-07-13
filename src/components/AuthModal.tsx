@@ -3,6 +3,7 @@ import * as Dialog from "@radix-ui/react-dialog";
 import { Mail, User, Phone, X, CheckCircle2 } from "lucide-react";
 import { useNavigate } from "@tanstack/react-router";
 import { PhoneInput } from "./PhoneInput";
+import { trackEvent, trackCustomEvent } from "../lib/pixel";
 
 export function AuthModal({
   open,
@@ -37,8 +38,14 @@ export function AuthModal({
 
   const navigate = useNavigate();
 
+  const handleFieldFocus = (fieldName: string, formName: string) => {
+    trackCustomEvent("FormFieldFocus", { field: fieldName, form: formName });
+    trackEvent("Contact", { content_category: "Form Interaction", content_name: `${formName} - ${fieldName}` });
+  };
+
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    trackEvent("InitiateCheckout", { content_name: "Login Form Submit Click" });
     setLLoading(true);
     setLError("");
     try {
@@ -58,6 +65,10 @@ export function AuthModal({
       if (!res.ok) throw new Error(data.details || data.error || "Login failed");
 
       setLSuccess(true);
+      trackEvent("CompleteRegistration", {
+        content_name: "Login Modal Form",
+        status: "success"
+      });
       setTimeout(() => {
         onOpenChange(false);
         navigate({ to: "/dashboard" });
@@ -80,6 +91,7 @@ export function AuthModal({
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    trackEvent("InitiateCheckout", { content_name: "Signup Form Submit Click" });
     setSLoading(true);
     setSError("");
 
@@ -120,12 +132,14 @@ export function AuthModal({
       }
 
       setSSuccess(true);
-      if (typeof window !== "undefined" && (window as any).fbq) {
-        (window as any).fbq("track", "Lead", {
-          content_name: "Signup Modal Form",
-          status: "success"
-        });
-      }
+      trackEvent("Lead", {
+        content_name: "Signup Modal Form",
+        status: "success"
+      });
+      trackEvent("CompleteRegistration", {
+        content_name: "Signup Modal Form",
+        status: "success"
+      });
       setTimeout(() => {
         onOpenChange(false);
         navigate({ to: "/dashboard" });
@@ -187,7 +201,7 @@ export function AuthModal({
                     )}
                     <div className="relative">
                       <Mail className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
-                      <input type="email" required value={lEmail} onChange={(e) => setLEmail(e.target.value)} className="w-full rounded-xl border border-white/10 bg-white/5 py-3 pl-11 pr-4 text-[15px] outline-none transition focus:border-white/30 focus:bg-white/10" placeholder="Adresse e-mail" />
+                      <input type="email" required value={lEmail} onChange={(e) => setLEmail(e.target.value)} onFocus={() => handleFieldFocus("email", "Login Form")} className="w-full rounded-xl border border-white/10 bg-white/5 py-3 pl-11 pr-4 text-[15px] outline-none transition focus:border-white/30 focus:bg-white/10" placeholder="Adresse e-mail" />
                     </div>
                     
                     <button disabled={lLoading} className="mt-2 flex w-full items-center justify-center gap-2 rounded-xl bg-white py-3 text-[15px] font-semibold text-black transition hover:bg-white/90 disabled:opacity-50">
@@ -228,13 +242,13 @@ export function AuthModal({
                     
                     <div className="relative">
                       <User className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
-                      <input type="text" required value={sName} onChange={(e) => setSName(e.target.value)} className="w-full rounded-xl border border-white/10 bg-white/5 py-3 pl-11 pr-4 text-[15px] outline-none transition focus:border-white/30 focus:bg-white/10" placeholder="Nom complet" />
+                      <input type="text" required value={sName} onChange={(e) => setSName(e.target.value)} onFocus={() => handleFieldFocus("name", "Signup Form")} className="w-full rounded-xl border border-white/10 bg-white/5 py-3 pl-11 pr-4 text-[15px] outline-none transition focus:border-white/30 focus:bg-white/10" placeholder="Nom complet" />
                     </div>
                     <div className="relative">
                       <Mail className="absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-white/40" />
-                      <input type="email" required value={sEmail} onChange={(e) => setSEmail(e.target.value)} className="w-full rounded-xl border border-white/10 bg-white/5 py-3 pl-11 pr-4 text-[15px] outline-none transition focus:border-white/30 focus:bg-white/10" placeholder="Adresse e-mail" />
+                      <input type="email" required value={sEmail} onChange={(e) => setSEmail(e.target.value)} onFocus={() => handleFieldFocus("email", "Signup Form")} className="w-full rounded-xl border border-white/10 bg-white/5 py-3 pl-11 pr-4 text-[15px] outline-none transition focus:border-white/30 focus:bg-white/10" placeholder="Adresse e-mail" />
                     </div>
-                    <PhoneInput hideLabel onChange={(full, code, err) => {
+                    <PhoneInput hideLabel onFocus={() => handleFieldFocus("phone", "Signup Form")} onChange={(full, code, err) => {
                       setSNumber(full);
                       setCountryCode(code);
                       setPhoneError(err);

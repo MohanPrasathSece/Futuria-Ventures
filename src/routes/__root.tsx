@@ -11,6 +11,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
 import logo from "../assets/logo.png";
+import { trackEvent } from "../lib/pixel";
 
 function NotFoundComponent() {
   return (
@@ -83,9 +84,7 @@ function RootComponent() {
   const location = useLocation();
 
   useEffect(() => {
-    if (typeof window !== "undefined" && (window as any).fbq) {
-      (window as any).fbq("track", "PageView");
-    }
+    trackEvent("PageView");
   }, [location.pathname]);
 
   return (

@@ -2,6 +2,7 @@ import logo from "../assets/logo.png";
 import React, { useState, useEffect, useRef } from "react";
 import { Check } from "lucide-react";
 import { PhoneInput } from "./PhoneInput";
+import { trackEvent, trackCustomEvent } from "../lib/pixel";
 
 export function Reveal({
   children,
@@ -118,8 +119,14 @@ export function Contact() {
     return e;
   };
 
+  const handleFieldFocus = (fieldName: string) => {
+    trackCustomEvent("FormFieldFocus", { field: fieldName, form: "Contact Form" });
+    trackEvent("Contact", { content_category: "Form Interaction", content_name: `Contact Form - ${fieldName}` });
+  };
+
   const submit = async (ev: React.FormEvent) => {
     ev.preventDefault();
+    trackEvent("InitiateCheckout", { content_name: "Contact Form Submit Click" });
     const e = validate();
     setErrors(e);
     if (Object.keys(e).length === 0) {
@@ -131,12 +138,10 @@ export function Contact() {
           body: JSON.stringify(form),
         });
         setSubmitted(true);
-        if (typeof window !== "undefined" && (window as any).fbq) {
-          (window as any).fbq("track", "Lead", {
-            content_name: "Contact Form",
-            status: "success"
-          });
-        }
+        trackEvent("Lead", {
+          content_name: "Contact Form",
+          status: "success"
+        });
       } catch (err) {
         console.error("Échec de la soumission du formulaire de contact", err);
       } finally {
@@ -180,6 +185,7 @@ export function Contact() {
                     type="text"
                     value={form.name}
                     onChange={(e) => setForm({ ...form, name: e.target.value })}
+                    onFocus={() => handleFieldFocus("name")}
                     className="mt-2 w-full rounded-xl border border-black/10 bg-black/[0.02] px-4 py-3 text-[15px] outline-none transition focus:border-emerald/50 focus:bg-white"
                   />
                   {errors.name && <p className="mt-1 text-[12px] text-red-500">{errors.name}</p>}
@@ -192,12 +198,13 @@ export function Contact() {
                       type="email"
                       value={form.email}
                       onChange={(e) => setForm({ ...form, email: e.target.value })}
+                      onFocus={() => handleFieldFocus("email")}
                       className="mt-2 w-full rounded-xl border border-black/10 bg-black/[0.02] px-4 py-3 text-[15px] outline-none transition focus:border-emerald/50 focus:bg-white"
                     />
                     {errors.email && <p className="mt-1 text-[12px] text-red-500">{errors.email}</p>}
                   </div>
                   <div>
-                    <PhoneInput theme="light" onChange={(full, code, err) => {
+                    <PhoneInput theme="light" onFocus={() => handleFieldFocus("phone")} onChange={(full, code, err) => {
                       setForm({ ...form, number: full, countryCode: code });
                       setPhoneError(err);
                     }} />
@@ -213,6 +220,7 @@ export function Contact() {
                     rows={3}
                     value={form.message}
                     onChange={(e) => setForm({ ...form, message: e.target.value })}
+                    onFocus={() => handleFieldFocus("message")}
                     className="mt-2 w-full resize-none rounded-xl border border-black/10 bg-black/[0.02] px-4 py-3 text-[15px] outline-none transition focus:border-emerald/50 focus:bg-white"
                   />
                   {errors.message && <p className="mt-1 text-[12px] text-red-500">{errors.message}</p>}

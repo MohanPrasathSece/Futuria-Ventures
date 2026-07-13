@@ -8,6 +8,7 @@ interface PhoneInputProps {
   defaultCountry?: string;
   theme?: "dark" | "light";
   hideLabel?: boolean;
+  onFocus?: () => void;
 }
 
 export function PhoneInput({
@@ -16,6 +17,7 @@ export function PhoneInput({
   defaultCountry = "CH",
   theme = "dark",
   hideLabel = false,
+  onFocus,
 }: PhoneInputProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -160,6 +162,7 @@ export function PhoneInput({
             value={local}
             onChange={handleLocalChange}
             onBlur={handleLocalBlur}
+            onFocus={onFocus}
             placeholder={selected.placeholder}
             className={`h-12 w-full rounded-xl border px-4 py-2 text-[15px] outline-none transition ${
               touched && error
