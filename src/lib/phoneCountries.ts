@@ -8,9 +8,9 @@ export interface Country {
 }
 
 export const COUNTRIES: Country[] = [
+  { code: "CH", name: "Switzerland",      dial: "+41",  flag: "🇨🇭", localLen: 9,  placeholder: "76 123 45 67" },
   { code: "FR", name: "France",           dial: "+33",  flag: "🇫🇷", localLen: 9,  placeholder: "6 12 34 56 78" },
   { code: "BE", name: "Belgium",          dial: "+32",  flag: "🇧🇪", localLen: 9,  placeholder: "470 12 34 56" },
-  { code: "CH", name: "Switzerland",      dial: "+41",  flag: "🇨🇭", localLen: 9,  placeholder: "76 123 45 67" },
   { code: "NL", name: "Netherlands",      dial: "+31",  flag: "🇳🇱", localLen: 9,  placeholder: "6 12345678" },
   { code: "CA", name: "Canada",           dial: "+1",   flag: "🇨🇦", localLen: 10, placeholder: "613 555 0123" },
   { code: "GB", name: "United Kingdom",   dial: "+44",  flag: "🇬🇧", localLen: 10, placeholder: "7911 123456" },
