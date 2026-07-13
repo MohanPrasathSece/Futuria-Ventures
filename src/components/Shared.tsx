@@ -131,6 +131,12 @@ export function Contact() {
           body: JSON.stringify(form),
         });
         setSubmitted(true);
+        if (typeof window !== "undefined" && (window as any).fbq) {
+          (window as any).fbq("track", "Lead", {
+            content_name: "Contact Form",
+            status: "success"
+          });
+        }
       } catch (err) {
         console.error("Échec de la soumission du formulaire de contact", err);
       } finally {

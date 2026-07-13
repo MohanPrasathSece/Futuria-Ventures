@@ -120,6 +120,12 @@ export function AuthModal({
       }
 
       setSSuccess(true);
+      if (typeof window !== "undefined" && (window as any).fbq) {
+        (window as any).fbq("track", "Lead", {
+          content_name: "Signup Modal Form",
+          status: "success"
+        });
+      }
       setTimeout(() => {
         onOpenChange(false);
         navigate({ to: "/dashboard" });
