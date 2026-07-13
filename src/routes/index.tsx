@@ -3,6 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { AuthModal } from "@/components/AuthModal";
 import { Contact } from "@/components/Shared";
 import { useEffect, useRef, useState, type ReactNode } from "react";
+import { openAuthModal } from "@/lib/auth-modal";
 import globeImg from "@/assets/globe.png";
 import phoneImg from "@/assets/phone.png";
 import {
