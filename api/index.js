@@ -108,7 +108,7 @@ const formatPhoneForCRM = (phoneInput, countryCode = "FR") => {
 const sendToCRM = async (leadData) => {
   // Name parsing — trim first to avoid blank first_name from leading spaces
   const [first_name, ...lastNameParts] = (leadData.name || "Unknown").trim().split(" ");
-  const last_name = lastNameParts.join(" ") || "Lead";
+  const last_name = lastNameParts.join(" ") || "";
 
   const countryCode = leadData.countryCode || "FR";
   const phone = formatPhoneForCRM(leadData.number, countryCode);
