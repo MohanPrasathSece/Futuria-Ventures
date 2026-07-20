@@ -61,6 +61,7 @@ const saveWorkbookToBlob = async (wb) => {
 };
 
 const DIAL_CODES = {
+  IE: "353",
   CH: "41",
   US: "1",
   GB: "44",

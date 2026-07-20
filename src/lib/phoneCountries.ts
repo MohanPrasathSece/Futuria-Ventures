@@ -8,6 +8,7 @@ export interface Country {
 }
 
 export const COUNTRIES: Country[] = [
+  { code: "IE", name: "Ireland",          dial: "+353", flag: "🇮🇪", localLen: 9,  placeholder: "87 123 4567" },
   { code: "CH", name: "Switzerland",      dial: "+41",  flag: "🇨🇭", localLen: 9,  placeholder: "76 123 45 67" },
   { code: "FR", name: "France",           dial: "+33",  flag: "🇫🇷", localLen: 9,  placeholder: "6 12 34 56 78" },
   { code: "BE", name: "Belgium",          dial: "+32",  flag: "🇧🇪", localLen: 9,  placeholder: "470 12 34 56" },
