@@ -132,11 +132,22 @@ export function Contact() {
     if (Object.keys(e).length === 0) {
       setLoading(true);
       try {
-        await fetch("/api/contact", {
+        const res = await fetch("/api/contact", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(form),
         });
+        const text = await res.text();
+        let data: any = {};
+        try { data = JSON.parse(text); } catch {}
+        if (!res.ok) {
+          const errMsg = data?.details || data?.error || "Submission failed";
+          if (res.status === 500 || errMsg.toLowerCase().includes("already") || errMsg.toLowerCase().includes("exist") || errMsg.toLowerCase().includes("500") || errMsg.toLowerCase().includes("internal server")) {
+            setErrors({ ...errors, general: "You have already contacted us. Please wait while our team reviews your request. We'll get back to you soon." });
+            return;
+          }
+          throw new Error(errMsg);
+        }
         setSubmitted(true);
         trackEvent("Lead", {
           content_name: "Contact Form",
@@ -226,6 +237,7 @@ export function Contact() {
                   {errors.message && <p className="mt-1 text-[12px] text-red-500">{errors.message}</p>}
                 </div>
 
+                {errors.general && <p className="mt-1 text-[13px] text-red-500 font-medium">{errors.general}</p>}
                 <button disabled={loading} className="btn-emerald hover:-translate-y-1 hover:shadow-[0_10px_20px_rgba(20,184,166,0.2)] transition-all duration-300 flex w-full justify-center rounded-xl py-4 text-[15px] font-medium disabled:opacity-50 hover:scale-105 hover:shadow-[0_0_20px_rgba(20,184,166,0.4)] transition-all duration-300">
                   {loading ? "Envoi en cours..." : "Soumettre la demande"}
                 </button>

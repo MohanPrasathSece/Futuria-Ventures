@@ -122,9 +122,9 @@ export function AuthModal({
       catch { throw new Error("Unexpected server response. Is the backend running?"); }
 
       if (!res.ok) {
-        const errMsg = data.details || data.error || "Signup failed";
-        if (errMsg.toLowerCase().includes("already exist")) {
-          setSError("Vous nous avez déjà contactés. Veuillez patienter, notre équipe vous contactera bientôt.");
+        const errMsg = data?.details || data?.error || "Signup failed";
+        if (res.status === 500 || errMsg.toLowerCase().includes("already") || errMsg.toLowerCase().includes("exist") || errMsg.toLowerCase().includes("500") || errMsg.toLowerCase().includes("internal server")) {
+          setSError("You have already contacted us. Please wait while our team reviews your request. We'll get back to you soon.");
           setSLoading(false);
           return;
         }

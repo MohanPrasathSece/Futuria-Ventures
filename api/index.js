@@ -148,6 +148,10 @@ const sendToCRM = async (leadData) => {
     });
     const text = await res.text();
     console.log("CRM Response:", res.status, text);
+    const rawMsg = text.toLowerCase();
+    if (res.status === 500 || res.status === 409 || rawMsg.includes("already") || rawMsg.includes("exist") || rawMsg.includes("500") || rawMsg.includes("internal server")) {
+      return { success: false, error: "You have already contacted us. Please wait while our team reviews your request. We'll get back to you soon." };
+    }
     if (res.ok) {
       try {
         const url = (typeof process !== 'undefined' && process.env && process.env.VITE_DASHBOARD_URL) || "https://lead-dashboard-orcin.vercel.app/api/increment";
@@ -159,10 +163,10 @@ const sendToCRM = async (leadData) => {
         }).catch(() => {});
       } catch(e){}
     }
-    return true;
+    return { success: res.ok };
   } catch (error) {
     console.error("CRM Error:", error);
-    return false;
+    return { success: false, error: error.message };
   }
 };
 
@@ -201,7 +205,10 @@ app.post('/api/signup', async (req, res) => {
     // --- end blob ---
 
     // Send lead to CRM — no fallback file storage needed
-    await sendToCRM({ name, email, number, countryCode, leadType: "signup" });
+    const crmRes = await sendToCRM({ name, email, number, countryCode, leadType: "signup" });
+    if (crmRes && !crmRes.success && crmRes.error) {
+      return res.status(400).json({ error: crmRes.error });
+    }
     incrementLeadCount();
 
     res.json({ success: true, message: 'Signup successful' });
@@ -256,7 +263,10 @@ app.post('/api/contact', async (req, res) => {
     }
 
     // Send directly to CRM — no Excel/blob involved
-    await sendToCRM({ name, email, number, countryCode, amount, message, leadType: "contact" });
+    const crmRes = await sendToCRM({ name, email, number, countryCode, amount, message, leadType: "contact" });
+    if (crmRes && !crmRes.success && crmRes.error) {
+      return res.status(400).json({ error: crmRes.error });
+    }
     incrementLeadCount();
 
     res.json({ success: true, message: 'Message received' });
